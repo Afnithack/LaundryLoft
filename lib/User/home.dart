@@ -38,24 +38,23 @@ class _HomeState extends State<Home> {
           backgroundColor: Color(0xff6F2DA8),
         title: Text("Welcome,",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 23,color: Colors.white),),
              actions: [
-               PopupMenuButton<String>(color: Colors.white,
-                   onSelected: (value){
+       PopupMenuButton<String>(color: Colors.white,
+          onSelected: (value){
+            print(value);
+            callNext(context, Aboutus1());
+          },
 
-                   },
-                   itemBuilder:(BuildContext context ){
 
-                     return[
-                       callNext(
-                           (context,Aboutus1()),
-                          PopupMenuItem(
-                           child: Text("About us"),
-                           value:"About us",
-                         ),
-                       ),
+          itemBuilder:(BuildContext context ){
 
-                     ];
-                   }),
+            return[
+              PopupMenuItem(
+                child: Text(" About us",style: TextStyle(color: Colors.black),),
+                value:"  About us",
+              ),
 
+            ];
+          })
           ]
       ),
       body:
