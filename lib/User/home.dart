@@ -155,21 +155,34 @@ class _HomeState extends State<Home> {
               }
             ),
               SizedBox(height: 50,),
-              GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Orderst(name:widget.name,phone: widget.phone,userid: widget.userid,) ));
-                },
-                child: Container(
-                  color:Colors.white ,height: 60,width: width,
-                  child: Row(
-                    children: [
-                      SizedBox(width: 50,),
-                      Text("Order Status",style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold,color: Colors.black),),
-                      SizedBox(width: 30,),
-                      Image.asset("assets/img_11.png")
-                    ],
-                  ),
-                ),
+              Consumer<LaundryProvider>(
+                builder: (context,value,child) {
+                  return GestureDetector(
+                    onTap: (){
+                      print(widget.userid+"sfnkjgl");
+                      value.getstatus(widget.userid,);
+                      Future.delayed(Duration(milliseconds: 2000), () {
+                        callNext(context, Orderst(userid: widget.userid,phone: widget.phone,name: widget.name,ticks:value.tick,));
+
+                      });
+
+
+                      print("ticks"+value.tick.toString());
+
+                    },
+                    child: Container(
+                      color:Colors.white ,height: 60,width: width,
+                      child: Row(
+                        children: [
+                          SizedBox(width: 50,),
+                          Text("Order Status",style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold,color: Colors.black),),
+                          SizedBox(width: 30,),
+                          Image.asset("assets/img_11.png")
+                        ],
+                      ),
+                    ),
+                  );
+                }
               ),
               SizedBox(height: 30,)
 

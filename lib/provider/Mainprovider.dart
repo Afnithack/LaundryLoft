@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
 import 'package:intl/intl.dart';
 import 'package:laundry/Constant/myfunction.dart';
+import 'package:laundry/User/orderstatus.dart';
 
 
 import 'mymodels.dart';
@@ -26,6 +27,7 @@ class LaundryProvider with ChangeNotifier {
   List<LaundryType> filtertype = [];
   String type = "";
   TextEditingController phonecontroller = TextEditingController();
+
 
 
   Future<void> addtype(String from, String id) async {
@@ -517,6 +519,19 @@ class LaundryProvider with ChangeNotifier {
   // String userid="";
   // String name="";
   // String phone="";
+  String dropdownvalue = 'Picked Up';
+  var Type = [
+    'Picked Up',
+    'In Progress',
+    'Out for Delivery',
+    'Delivered',
+  ];
+
+
+  void dropdown(String? newValue) {
+    dropdownvalue = newValue!;
+    notifyListeners();
+  }
   void addPickupdtls(String userid,String name,String phone) {
     print("pppppppppppp");
     DateTime tod = DateTime.now();
@@ -533,8 +548,8 @@ class LaundryProvider with ChangeNotifier {
     map["ORDER_TYPE"]='';
     map["DELIVERY_DATE"]='';
     map["PAYMENT_METHOD"]='';
-    map["ORDER_STATUS"]='';
-    map["STATUS"]="REQUESTED";
+    map["STATUS"] ="REQUESTED";
+
     db.collection("PICKUP_DETAILS").doc(pkid).set(map);
 
     getPickupdtls();
@@ -551,6 +566,7 @@ class LaundryProvider with ChangeNotifier {
        if (value.docs.isNotEmpty) {
          booklist.clear();
          for(var value in value.docs){
+           Map<dynamic,dynamic>map=value.data();
             booklist.add(BookinglistModel(
                 value.id,
                 value.get("USER_NAME").toString(),
@@ -561,17 +577,91 @@ class LaundryProvider with ChangeNotifier {
                 value.get("DELIVERY_DATE").toString(),
                 value.get("PICKUP_TIME").toString(),
                 value.get("PAYMENT_METHOD").toString(),
-                value.get("ORDER_STATUS").toString(),
+                map["ORDER_STATUS"]??"",
                 value.get("STATUS").toString(),
                ));
-           
+            notifyListeners();
+
+
          }
          notifyListeners();
        }
-       notifyListeners();
      });
      notifyListeners();
      }
+
+     // TextEditingController statuscontroller=TextEditingController();
+     // void getUpdateStatus(String stsid){
+     //   db.collection("PICKUP_DETAILS").doc(stsid).get().then((value) {
+     //     if (value.exists){
+     //       Map<dynamic,dynamic>map=value.data()as Map;
+     //       statuscontroller.text=map["STATUS"].toString();
+     //       notifyListeners();
+     //     }
+     //   });
+     //   notifyListeners();
+     //
+     // }
+
+     void updateStatus(String orderId,BuildContext context){
+       HashMap<String, Object> map = HashMap();
+       map["ORDER_STATUS"]=dropdownvalue;
+       db.collection("PICKUP_DETAILS").doc(orderId).set(map,SetOptions(merge: true));
+       finish(context);
+       getPickupdtls();
+     }
+     
+     
+     String status="";
+     int tick=0;
+     bool loader=false;
+     void getstatus(String userId)async {
+       loader=true;
+       db.collection("PICKUP_DETAILS").where("USER_ID",isEqualTo:userId).get().then((value) {
+         if(value.docs.isNotEmpty) {
+           loader=false;
+           for (var elements in value.docs) {
+             print(elements.toString()+"lkvhjh");
+             Map<dynamic, dynamic>map = elements.data();
+             status = map["ORDER_STATUS"].toString();
+             notifyListeners();
+
+             print(status+"flnhjgbhb");
+
+             if(status=="Picked Up"){
+               tick=1;
+               notifyListeners();
+
+             }
+             else if(status=="In Progress"){
+               tick=2;
+               notifyListeners();
+
+             }
+             else if(status=="Out for Delivery"){
+               tick=3;
+               print("mbbbbbbbbbn");
+               notifyListeners();
+
+             }
+             else if(status=="Delivered"){
+               tick=4;
+               notifyListeners();
+
+             }
+
+             print("tttiiicckk"+tick.toString());
+           notifyListeners();
+           }
+
+         }
+       });
+       notifyListeners();
+       
+     }
+
+
+
   void acceptStatusUpdate(String id) {
     HashMap<String, Object> Acceptmap = HashMap();
     Acceptmap["STATUS"] = "Accepted";

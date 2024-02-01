@@ -144,8 +144,11 @@ String userId ='';
               // mainProvider.getMakeupList();
               mainProvider.getType();
                print("wwwwwwwwwwwww");
+             // mainProvider.getstatus(userId);
+             print("tiiiickkkkkk"+mainProvider.tick.toString());
               callNextReplacement(context,Bottom(name: loginUsername,phone: loginphno,userid: loginUserid, ),);
               print("xxxxxxxxxxx");
+
             }
           }
 

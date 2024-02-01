@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/Constant/refactoring.dart';
 import 'package:laundry/provider/Mainprovider.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +8,10 @@ import 'mainpage.dart';
 import 'orderdtls.dart';
 
 class Booking extends StatefulWidget {
-  const Booking({super.key});
+  // String from;
+  // String stsid;
+  Booking({super.key});
+
 
   @override
   State<Booking> createState() => _BookingState();
@@ -16,7 +20,9 @@ class Booking extends StatefulWidget {
 class _BookingState extends State<Booking> {
   @override
   Widget build(BuildContext context) {
-    String dropdownValue ='Picked up';
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         leading:GestureDetector(
@@ -96,29 +102,106 @@ class _BookingState extends State<Booking> {
                               children: [
                                 Text("Order Status:",style: TextStyle(fontSize: 21,fontWeight: FontWeight.w500,color: Colors.white),),
                                 SizedBox(width: 10,),
-                                Container(height:30,
-                                  decoration:BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [BoxShadow(color: Colors.grey.shade700,blurRadius: 2,spreadRadius: 2)],color: Colors.white,
+
+                                InkWell(
+                                  onTap: (){
+                                    showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                            backgroundColor: Color(0xffD9D9D9),
+                                            content:
+                                            Container(
+                                              height: 100,
+                                              child: Column(
+                                                children: [
+                                                  Consumer<LaundryProvider>(
+                                                      builder: (context,value2,child) {
+                                                        return Container(
+
+                                                          height: 50,
+                                                          width: 180,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(12),
+                                                              border: Border.all(color:Color(0xff6F2DA8) )
+                                                          ),
+                                                          // color: Colors.blue,
+                                                          // height: 50,
+                                                          child: DropdownButton<String>(
+                                                            value: value2.dropdownvalue,
+                                                            icon: const Icon(Icons.arrow_downward),
+                                                            elevation: 16,
+                                                            style: const TextStyle(color: Colors.deepPurple),
+
+                                                            onChanged: (String? value) {
+                                                              // This is called when the user selects an item.
+                                                              value2.dropdown(value);
+                                                            },
+                                                            items: value2.Type.map<DropdownMenuItem<String>>((String value) {
+                                                              return DropdownMenuItem<String>(
+                                                                value: value,
+                                                                child: Text(value),
+                                                              );
+                                                            }).toList(),
+                                                          ),
+                                                        );
+
+
+                                                        //
+                                                        //             // Consumer<LaundryProvider>(
+                                                        //             //     builder: (context, value,child) {
+                                                        //             //       return Container(
+                                                        //             //         margin: EdgeInsets.symmetric(horizontal: 15),
+                                                        //             //         width:50,
+                                                        //             //         height:50,
+                                                        //             //         decoration: BoxDecoration(color:Colors.red ,borderRadius: BorderRadius.circular(20)),
+                                                        //             //         child: DropdownButton(
+                                                        //             //           // Initial Value
+                                                        //             //           underline:Container(color: Colors.white) ,
+                                                        //             //           value:value.dropdownvalue,
+                                                        //             //           icon: const Icon(Icons.keyboard_arrow_down),
+                                                        //             //           items:value.Type.map((String item) {
+                                                        //             //             return DropdownMenuItem(
+                                                        //             //               value: item,
+                                                        //             //               child: Text(item),
+                                                        //             //             );
+                                                        //             //           }).toList(),
+                                                        //             //           onChanged: (String? newValue) {
+                                                        //             //             value.dropdown(newValue!);
+                                                        //             //           },
+                                                        //             //         ),
+                                                        //             //       );
+                                                        //             //     }
+                                                        //             // );
+                                                        //
+                                                        //           },);
+                                                        //     }
+                                                        //   ),
+                                                        // ),
+
+
+                                                      }),
+                                                  SizedBox(height: 10,),
+                                                  InkWell(
+                                                      onTap: (){
+                                                        value.updateStatus(item.id,context);
+
+                                                        },
+                                                      child: button("OK", 30.0, 50.0))
+
+                                                ],
+                                              ),
+                                            )));
+                                  },
+                                  child:item.order_staus!=""?Text(item.order_staus,style: TextStyle(color: Colors.white),): Container(height: height/20,
+                                    width: width/3.8,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.white
+                                    ),
+                                     child: const Center(child: Text("UPDATE",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 16),)),
                                   ),
-                                  child: DropdownButton<String>(value:dropdownValue,
-                                      items: <String>['Picked up','In Process','On The Way','Delivered'].map<DropdownMenuItem<String>>
-                                        ((String value){
-                                        return DropdownMenuItem<String>(value: value,
-                                          child: Center(
-                                            child: Text(
-                                              value,style: TextStyle(fontSize: 16,color: Colors.grey.shade900),
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue){
-                                        setState((){
-                                          dropdownValue = newValue!;
-                                        });
-                                      }
-                                  ),
-                                ),
+                                )
+
                               ],
                             ),
                             SizedBox(height:25,),
