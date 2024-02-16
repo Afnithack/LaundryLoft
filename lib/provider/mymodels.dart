@@ -58,8 +58,17 @@ class BookinglistModel{
       this.order_staus,
       this.status
       );
-
-
-
 }
+class WashlistModel{
+  String item;
+  int count;
+  double price;
+
+  WashlistModel(
+      this.item,
+      this.count,
+      this.price
+      );
+}
+
 

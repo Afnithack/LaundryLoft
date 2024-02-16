@@ -955,63 +955,22 @@ double delivery_charge = 30.0;
       }
   }
 
+    List<WashlistModel>wash_list=[];
+  void Order_Details (){
+    HashMap<String,dynamic>Main_map=HashMap();
+    HashMap<String,dynamic>Category_map=HashMap();
+    for(var e in wash_list){
+      HashMap<String,dynamic>item_map=HashMap();
+      item_map["COUNT"]=e.count;
+      item_map["PRICE"]=e.price;
+      Category_map[e.item]=item_map;
+    }
+    for(var e in TypeList){
+      Category_map[e.type]=Category_map;
+    }
+    Main_map["CATEGORY"]=Category_map;
 
-    TextEditingController aboutusheading=TextEditingController();
-    TextEditingController aboutusdetails=TextEditingController();
-
-  // void addAboutus(){
-  //   DateTime tod = DateTime.now();
-  //   String abid = tod.millisecondsSinceEpoch.toString();
-  //   HashMap<String, Object> map = HashMap();
-  //
-  //   map["HEADING_NAME"] = aboutusheading.text;
-  //   map["DETAILS"] = aboutusdetails.text;
-  //   db.collection("ABOUT_US").doc(abid).set(map);
-  //   getAboutUs();
-  //  notifyListeners();
-  // }
-  //   String id="";
-  //  String heading='';
-  // String description='';
-  //  bool getaboutusloader=false;
-  // void getAboutUs(){
-  //   getaboutusloader = true;
-  //   db.collection("ABOUT_US").get().then((value1){
-  //     if (value1.docs.isNotEmpty) {
-  //       for(var data in value1.docs){
-  //         id=data.id;
-  //         heading=data.get("HEADING_NAME");
-  //         description=data.get("DETAILS");
-  //
-  //         notifyListeners();
-  //
-  //       }
-  //       // heading = value1.get("HEADING_NAME").toString();
-  //       // description = value1.get("DETAILS").toString();
-  //       notifyListeners();
-  //     }
-  //     notifyListeners();
-  //     }
-  //
-  //     );
-  //   notifyListeners();
-  //   }
-
-
-  //   void addBookings(){
-  //   DateTime tod=DateTime.now();
-  //   String bid=tod.millisecondsSinceEpoch.toString();
-  //   HashMap<String,Object>map=HashMap();
-  //
-  //   db.collection("BOOKINGS").wher
-  //   map["NAME"]=username;
-  //   map["PHONE_NUMBER"]=usernumber;
-  //   map["ADDRESS"]=
-  //
-  //
-  // }
-
-
+  }
 
 
 

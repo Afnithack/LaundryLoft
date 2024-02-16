@@ -162,7 +162,7 @@ class _PickupState extends State<Pickup> {
       SizedBox(height: 20,),
       Consumer<LaundryProvider>(
         builder: (context,value,child) {
-          return Container( width: 330,height:110,
+          return Container( width: 330,height:180,
             decoration: BoxDecoration(
                 boxShadow: [BoxShadow(
                   color: Colors.grey.shade400,spreadRadius:1,blurRadius:2,

@@ -120,7 +120,8 @@ class Washing extends StatelessWidget {
 
                             SizedBox(width: 5,),
                             Text(item.count.toString()),
-                            SizedBox(width: 5,),
+                                SizedBox(width: 5,),
+
 
 
                             Container(
@@ -133,6 +134,7 @@ class Washing extends StatelessWidget {
                                     return InkWell(
                                       onTap: (){
                                         item.count++;
+                                        print("xyz"+item.count.toString());
                                        value.Inrement(item.count,item.id,basic_price);
                                       },
                                         child: Icon(Icons.add));
@@ -145,6 +147,7 @@ class Washing extends StatelessWidget {
 
                                   )
                           );
+
 
 
 
