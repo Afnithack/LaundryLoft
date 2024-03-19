@@ -103,13 +103,15 @@ print(value);
       });
   }
   String loginUserid='';
+  String loginUsername='';
+  String loginphno="";
   Future<void> userAuthorized(String? phoneNumber, BuildContext context) async {
 
-    String loginUsername='';
+
     String loginUsertype='';
     //String loginUserid='';
 String userId ='';
-    String loginphno="";
+
     String loginPhoto="";
     LaundryProvider mainProvider = Provider.of<LaundryProvider>(context, listen: false);
 

@@ -10,9 +10,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
 import 'package:intl/intl.dart';
 import 'package:laundry/Constant/myfunction.dart';
-import 'package:laundry/User/orderstatus.dart';
+import 'package:provider/provider.dart';
 
 
+import '../User/washing.dart';
+import 'loginprovider.dart';
 import 'mymodels.dart';
 
 class LaundryProvider with ChangeNotifier {
@@ -25,6 +27,7 @@ class LaundryProvider with ChangeNotifier {
   String imageUrl = "";
   List<LaundryType> TypeList = [];
   List<LaundryType> filtertype = [];
+  List<LaundryType>unselected_washtype=[];
   String type = "";
   TextEditingController phonecontroller = TextEditingController();
 
@@ -173,6 +176,7 @@ class LaundryProvider with ChangeNotifier {
 
           ));
           filtertype=TypeList;
+          unselected_washtype=TypeList;
           notifyListeners();
         }
         notifyListeners();
@@ -532,6 +536,8 @@ class LaundryProvider with ChangeNotifier {
     dropdownvalue = newValue!;
     notifyListeners();
   }
+
+
   void addPickupdtls(String userid,String name,String phone) {
     print("pppppppppppp");
     DateTime tod = DateTime.now();
@@ -545,9 +551,8 @@ class LaundryProvider with ChangeNotifier {
     map["USER_NAME"]=name;
     map["PHONE_NUMBER"]=phone;
     map["USER_ID"]=userid;
-    map["ORDER_TYPE"]='';
+    map["ORDER_ID"]= order_id;
     map["DELIVERY_DATE"]='';
-    map["PAYMENT_METHOD"]='';
     map["STATUS"] ="REQUESTED";
 
     db.collection("PICKUP_DETAILS").doc(pkid).set(map);
@@ -610,8 +615,8 @@ class LaundryProvider with ChangeNotifier {
        finish(context);
        getPickupdtls();
      }
-     
-     
+
+
      String status="";
      int tick=0;
      bool loader=false;
@@ -657,7 +662,7 @@ class LaundryProvider with ChangeNotifier {
          }
        });
        notifyListeners();
-       
+
      }
 
 
@@ -956,23 +961,97 @@ double delivery_charge = 30.0;
   }
 
     List<WashlistModel>wash_list=[];
-  void Order_Details (){
+  String order_id = '';
+
+  void Add_Order_Details (String from,String updt_id){
+    double total_price = 0.0;
+    DateTime id=DateTime.now();
+    String order_id=id.millisecondsSinceEpoch.toString();
     HashMap<String,dynamic>Main_map=HashMap();
     HashMap<String,dynamic>Category_map=HashMap();
+    HashMap<String,dynamic>item_map=HashMap();
     for(var e in wash_list){
-      HashMap<String,dynamic>item_map=HashMap();
-      item_map["COUNT"]=e.count;
-      item_map["PRICE"]=e.price;
-      Category_map[e.item]=item_map;
+      HashMap<String,dynamic>count_map=HashMap();
+      count_map["COUNT"]=e.count;
+      count_map["PRICE"]=e.price;
+      total_price = total_price + e.price;
+      item_map[e.item]=count_map;
     }
     for(var e in TypeList){
-      Category_map[e.type]=Category_map;
+      Category_map[e.type]=item_map;
     }
-    Main_map["CATEGORY"]=Category_map;
+    Main_map["ORDER_LIST"]=Category_map;
 
+    if(from=='NEW'){
+      Main_map["ORDER_ID"]=order_id;
+      db.collection("Order_Details").doc(order_id).set(Main_map,SetOptions(merge: true));
+    }
+    else{
+      db.collection("Order_Details").doc(updt_id).update(Main_map);
+    }
+
+
+  }
+
+  void Remove_washtype(String catname,BuildContext context){
+    int index;
+    print("Remove_washtype");
+    print("catname = $catname");
+    if(unselected_washtype.isNotEmpty)
+    {
+      unselected_washtype.removeWhere((element) => element.type == catname);
+      notifyListeners();
+    }
+    print(unselected_washtype);
+    AlertBox(context);
+    notifyListeners();
+  }
+
+  void AlertBox(BuildContext context){
+    print("alert box");
+    // LaundryProvider provider=Provider.of(context,listen:false);
+    LoginProvider log_provider=Provider.of(context, listen: false);
+    showDialog(context: context,
+        builder: (context)=>AlertDialog(
+          content: Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: ListView.builder(
+
+                itemCount: unselected_washtype.length,
+                shrinkWrap: true,
+                itemBuilder: (context,index){
+                  return InkWell(
+                    onTap: (){
+                      var item= unselected_washtype[index].id.toString();
+                      getLaundryCategory(item);
+                      total_price1=0.0;
+
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context)=>Washing(
+                            catid:unselected_washtype[index].id.toString(),catname:unselected_washtype[index].type.toString(),
+                            userid:log_provider.loginUserid,phone: log_provider.loginphno,name: log_provider.loginUsername,
+                          )));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom:10),
+                      child: Container(
+                        height:50,
+                        width: 200,
+                        color: Color(0xff6F2DA8),
+                        child: Center(child: Text(unselected_washtype[index].type.toString(),style: TextStyle(fontSize: 19,color: Colors.white),)),
+                      ),
+                    ),
+                  );
+
+                }
+
+            ),
+          ),
+        )
+    );
   }
 
 
 
-  
+
 }

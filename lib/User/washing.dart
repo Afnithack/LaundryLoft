@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:laundry/Constant/refactoring.dart';
 import 'package:laundry/User/pickupdtls.dart';
 import 'package:laundry/provider/Mainprovider.dart';
+import 'package:laundry/provider/loginprovider.dart';
 import 'package:provider/provider.dart';
 
 import '../Constant/myfunction.dart';
@@ -14,7 +15,8 @@ class Washing extends StatelessWidget {
   String userid;
   String name;
   String phone;
-   Washing({super.key,required this .catname,required this.catid,required this.userid,required this.phone,required this.name});
+   Washing({super.key,required this .catname,required this.catid,required this.userid,required this.phone,required this.name
+   });
 
 
 
@@ -23,6 +25,7 @@ class Washing extends StatelessWidget {
     print("kvbfjvhfvff"+userid);
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+    LaundryProvider provider=Provider.of(context,listen:false);
     return  SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -168,17 +171,26 @@ class Washing extends StatelessWidget {
           boxShadow: [BoxShadow(color: Colors.grey.shade400,blurRadius:1,spreadRadius:1)],color:Colors.white,
         ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+               provider.unselected_washtype.length>1?
+              Consumer<LaundryProvider>(
+                builder: (context,value,child) {
+                  return GestureDetector(
+                  onTap: (){
+                    provider.Remove_washtype(catname, context);
+                    // value.Add_Order_Details();
 
-              GestureDetector(
-              onTap: (){
-            callNext(context,Home(userid:userid,phone: phone,name: name,));
+
+            // callNext(context,Home(userid:userid,phone: phone,name: name,));
             },
             child: Padding(
-              padding: const EdgeInsets.only(right: 10,left: 10),
-              child: button("Add More", height/17, width/3, ),
+                  padding: const EdgeInsets.only(right: 10,left: 10),
+                  child: button("Add More", height/17, width/3, ),
 
-            )),
+            ));
+                }
+              ):SizedBox(),
 
               Consumer<LaundryProvider>(
                   builder: (context8, value, child) {
@@ -188,7 +200,7 @@ class Washing extends StatelessWidget {
                         callNext(context,Pickup(userid:userid,phone: phone,name: name,));
                       },
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 10,left: 20),
+                        padding: const EdgeInsets.only(right: 10),
                         child: button("Finish", height/17, width/3, ),
 
                       ));
@@ -197,7 +209,10 @@ class Washing extends StatelessWidget {
               SizedBox(width: width/25,),
               Consumer<LaundryProvider>(
                 builder: (context1, value, child) {
-                  return Text(value.total_price1.toString(),style: TextStyle(color: Colors.blueAccent,fontSize: 25,fontWeight: FontWeight.w500),);
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: Text(value.total_price1.toString(),style: TextStyle(color: Colors.blueAccent,fontSize: 25,fontWeight: FontWeight.w500),),
+                  );
                 }
               ),
 
@@ -211,3 +226,4 @@ class Washing extends StatelessWidget {
     );
   }
 }
+
