@@ -126,7 +126,7 @@ class _Home1State extends State<Home1> {
                                       Consumer<LaundryProvider>(
                                           builder: (context,value,child) {
                                             return InkWell(
-                                                onLongPress: () {
+                                                onTap: () {
 
                                                   finish(context);
                                                   value.editType(value.TypeList[index].id );

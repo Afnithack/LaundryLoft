@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:laundry/Constant/refactoring.dart';
 import 'package:laundry/User/pickupdtls.dart';
 import 'package:laundry/provider/Mainprovider.dart';
-import 'package:laundry/provider/loginprovider.dart';
 import 'package:provider/provider.dart';
 
 import '../Constant/myfunction.dart';
@@ -79,7 +78,7 @@ class Washing extends StatelessWidget {
                         itemBuilder: (context,index) {
                       var item=value.categorylist[index];
 
-                       double basic_price = value.default_laundrylist[index].price;
+                       // double basic_price = value.default_laundrylist[index].price;
                        //print("${value.default_laundrylist[index].name} price = ${value.default_laundrylist[index].price}");
 
                           // scrollDirection: Axis.vertical,
@@ -114,7 +113,7 @@ class Washing extends StatelessWidget {
                                     builder: (context,value,child) {
                                       return InkWell(
                                            onTap: (){
-                                             value.decrement(item.count,item.id,item.price,basic_price);
+                                             value.decrement(index);
                                            },
                                           child: Icon(Icons.remove));
                                     }
@@ -136,9 +135,9 @@ class Washing extends StatelessWidget {
                                   builder: (context,value,child) {
                                     return InkWell(
                                       onTap: (){
-                                        item.count++;
+                                        // item.count++;
                                         print("xyz"+item.count.toString());
-                                       value.Inrement(item.count,item.id,basic_price);
+                                       value.increment(index);
                                       },
                                         child: Icon(Icons.add));
                                   }
@@ -171,32 +170,33 @@ class Washing extends StatelessWidget {
           boxShadow: [BoxShadow(color: Colors.grey.shade400,blurRadius:1,spreadRadius:1)],color:Colors.white,
         ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-               provider.unselected_washtype.length>1?
-              Consumer<LaundryProvider>(
-                builder: (context,value,child) {
-                  return GestureDetector(
-                  onTap: (){
-                    provider.Remove_washtype(catname, context);
-                    // value.Add_Order_Details();
-
-
-            // callNext(context,Home(userid:userid,phone: phone,name: name,));
-            },
-            child: Padding(
-                  padding: const EdgeInsets.only(right: 10,left: 10),
-                  child: button("Add More", height/17, width/3, ),
-
-            ));
-                }
-              ):SizedBox(),
+            //    provider.unselected_washtype.length>1?
+            //   Consumer<LaundryProvider>(
+            //     builder: (context,value,child) {
+            //       return GestureDetector(
+            //       onTap: (){
+            //         provider.Remove_washtype(catname, context);
+            //         // value.Add_Order_Details();
+            //
+            //
+            // // callNext(context,Home(userid:userid,phone: phone,name: name,));
+            // },
+            // child: Padding(
+            //       padding: const EdgeInsets.only(right: 10,left: 10),
+            //       child: button("Add More", height/17, width/3, ),
+            //
+            // ));
+            //     }
+            //   ):SizedBox(),
 
               Consumer<LaundryProvider>(
                   builder: (context8, value, child) {
                   return GestureDetector(
                       onTap: (){
-                        value.total_list.add(value.total_price1);
+                        // value.total_list.add(value.total_price1);
+                        value.AddOrderDetails(userid,catname);
                         callNext(context,Pickup(userid:userid,phone: phone,name: name,));
                       },
                       child: Padding(
@@ -211,7 +211,7 @@ class Washing extends StatelessWidget {
                 builder: (context1, value, child) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 20.0),
-                    child: Text(value.total_price1.toString(),style: TextStyle(color: Colors.blueAccent,fontSize: 25,fontWeight: FontWeight.w500),),
+                    child: Text(value.getTotalAmount().toString(),style: TextStyle(color: Colors.blueAccent,fontSize: 25,fontWeight: FontWeight.w500),),
                   );
                 }
               ),

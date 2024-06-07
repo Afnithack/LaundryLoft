@@ -71,4 +71,19 @@ class WashlistModel{
       );
 }
 
+  class OrderModel{
+   String id;
+   String name;
+   double price;
+   int count;
+
+  OrderModel(
+      this.id,
+      this.name,
+      this.price,
+      this.count,
+);
+
+}
+
 

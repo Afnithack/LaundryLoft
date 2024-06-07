@@ -99,6 +99,8 @@ class Washing1 extends StatelessWidget {
                                                           return TextButton(
                                                             onPressed: () {
                                                               provider.DeleteCategoryType(value.categorylist[index].id,context);
+                                                              value.getLaundryCategory("");
+
                                                               finish(context);
 
                                                             },

@@ -551,7 +551,7 @@ class LaundryProvider with ChangeNotifier {
     map["USER_NAME"]=name;
     map["PHONE_NUMBER"]=phone;
     map["USER_ID"]=userid;
-    map["ORDER_ID"]= order_id;
+    // map["ORDER_ID"]= order_id;
     map["DELIVERY_DATE"]='';
     map["STATUS"] ="REQUESTED";
 
@@ -695,30 +695,24 @@ class LaundryProvider with ChangeNotifier {
   String imageCatUrl = "";
 
 
-  Future<void> addLaundryCategory(String from, String catid,String laundry_id,BuildContext context) async {
+  Future<void> addLaundryCategory(String from, String catid, String laundry_id, BuildContext context) async {
     print("lllllllll");
     DateTime tod = DateTime.now();
     String lcod = tod.millisecondsSinceEpoch.toString();
-    HashMap<String, Object>map = HashMap();
+    HashMap<String, Object> map = HashMap();
 
     map["CATEGORY_ID"] = lcod;
     map["CATEGORY_NAME"] = categoryname.text;
     map["CATEGORY_PRICE"] = categoryprice.text;
-    // map["LAUNDRY_NAME"] = laundrytypecontroller.text;
     map["LAUNDRY_ID"] = laundry_id;
 
-
     if (fileCatImage != null) {
-      String photoId = DateTime
-          .now()
-          .millisecondsSinceEpoch
-          .toString();
+      String photoId = DateTime.now().millisecondsSinceEpoch.toString();
 
       ref = FirebaseStorage.instance.ref().child(photoId);
       await ref.putFile(fileCatImage!).whenComplete(() async {
         await ref.getDownloadURL().then((value) {
           map["PHOTO"] = value;
-
           notifyListeners();
         });
         notifyListeners();
@@ -726,18 +720,22 @@ class LaundryProvider with ChangeNotifier {
       notifyListeners();
     } else {
       map['PHOTO'] = '';
-      // editMap['IMAGE_URL'] = imageUrl;
     }
 
+    // Check if 'from' is 'NEW' to decide whether to use 'set' or 'update'
     if (from == "NEW") {
+      // Use 'set' method with generated document ID 'lcod'
       db.collection("LAUNDRY_CATEGORY").doc(lcod).set(map);
     } else {
+      // Use 'update' method with provided 'catid'
       db.collection("LAUNDRY_CATEGORY").doc(catid).update(map);
     }
+
     getLaundryCategory(laundry_id);
-     finish(context);
+    // finish(context);
     notifyListeners();
   }
+
 
   void setCatImage(File imagee) {
     fileCatImage = imagee;
@@ -824,95 +822,118 @@ double total_price_default = 0.0;
 double grand_total = 0.0;
 double delivery_charge = 30.0;
   void getLaundryCategory(String id) {
-    // categorylist.clear();
     getLaundryCategoryLoader = true;
     db.collection("LAUNDRY_CATEGORY").where("LAUNDRY_ID", isEqualTo: id)
         .get()
         .then((value1) {
       if (value1.docs.isNotEmpty) {
-        total_price1 = 0.0;
-        total_price_default = 0.0;
         categorylist.clear();
-        default_laundrylist.clear();
-        getLaundryCategoryLoader = false;
         for (var value in value1.docs) {
-
-          categorylist.add(
-              LaundrycategoryList(value.get("CATEGORY_ID").toString(),
+          try {
+            double categoryPrice = double.parse(value.get("CATEGORY_PRICE").toString());
+            categorylist.add(
+              LaundrycategoryList(
+                value.get("CATEGORY_ID").toString(),
                 value.get('PHOTO').toString(),
                 value.get("CATEGORY_NAME").toString(),
-                count *  double.parse(value.get("CATEGORY_PRICE").toString()),
-                count ,
-
-                 total_price1 = total_price1 + (count*double.parse(value.get("CATEGORY_PRICE").toString()))
-
-                // value.get("LAUNDRY_NAME").toString(),
-              ));
-          print("TOTAL PRICE =  $total_price1");
-         // total_price = total_price + double.parse(categorylist..toString());
-          default_laundrylist.add(LaundrycategoryList(value.get("CATEGORY_ID").toString(),
-              value.get('PHOTO').toString(),
-              value.get("CATEGORY_NAME").toString(),
-              double.parse(value.get("CATEGORY_PRICE").toString()),
-              count,
-              total_price_default= total_price_default +(count* double.parse(value.get("CATEGORY_PRICE").toString()))
-
-            // value.get("LAUNDRY_NAME").toString(),
-          ));
-          notifyListeners();
+                categoryPrice,
+                0,
+                0,
+              ),
+            );
+          } catch (e) {
+            print("Error parsing CATEGORY_PRICE: $e");
+            // Handle parsing error, maybe skip this category or provide fallback value
+          }
         }
         notifyListeners();
       }
+      getLaundryCategoryLoader = false;
+      notifyListeners();
+    }).catchError((error) {
+      print("Error fetching categories: $error");
+      getLaundryCategoryLoader = false;
       notifyListeners();
     });
+  }
+
+
+  void increment(int index){
+      if(categorylist[index].count>=0){
+        categorylist[index].count++;
+      }
+
+    notifyListeners();
+  }
+
+  void decrement(int index){
+      if(categorylist[index].count>0){
+        categorylist[index].count--;
+      }
+    notifyListeners();
+  }
+
+  double getTotalAmount(){
+    double value=0.0;
+    for(var e in categorylist){
+      if(e.count>0){
+        value=value+(e.count*double.parse(e.price.toString()));
+      }
+    }
+    return value;
   }
 
   void editCategoryType(String ecid) {
     db.collection("LAUNDRY_CATEGORY").doc(ecid).get().then((value) {
       if (value.exists) {
         Map<dynamic, dynamic> map = value.data() as Map;
-
         categoryname.text = map["CATEGORY_NAME"].toString();
         categoryprice.text = map["CATEGORY_PRICE"].toString();
         imageCatUrl = map["PHOTO"].toString();
-
         notifyListeners();
       }
     });
   }
 
+
+
+
+
   void DeleteCategoryType(String dcid, BuildContext context) {
     db.collection("LAUNDRY_CATEGORY").doc(dcid).delete();
+    notifyListeners();
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(
       content: Text("Deleted"),
       backgroundColor: Color(0xff523557),
     ));
-    getLaundryCategory(dcid);
+    // getLaundryCategory(dcid);
     notifyListeners();
   }
+
 
   void clearcatfn() {
     categoryname.clear();
     categoryprice.clear();
     fileCatImage = null;
+    imageCatUrl="";
 
   }
 
 
-  void Inrement(int count, String id, double basic_price) {
-
-    for (var e in categorylist) {
-      if (e.id == id) {
-        if (count > 0) {
-          e.price = basic_price * count;
-        }
-        find_total(id);
-        notifyListeners();
-      }
-    }
-    notifyListeners();
-  }
+  // void Inrement(int count, String id, double basic_price) {
+  //
+  //   for (var e in categorylist) {
+  //     if (e.id == id) {
+  //       if (count > 0) {
+  //         e.price = basic_price * count;
+  //       }
+  //       find_total(id);
+  //       notifyListeners();
+  //     }
+  //   }
+  //   notifyListeners();
+  // }
   void find_total(String id)
   {
     total_price1 = 0.0;
@@ -935,19 +956,19 @@ double delivery_charge = 30.0;
     //grand_total = grand_total + total_price1;
       }
 
-    void decrement(int count, String id,double price,double basic_price)
-    {
-      double amount=0;
-      for (var e in categorylist) {
-        if (e.id == id  && e.count>0) {
-          e.count--;
-          e.price = basic_price * e.count;
-          find_total(id);
-          notifyListeners();
-        }
-      }
-      notifyListeners();
-    }
+    // void decrement(int count, String id,double price,double basic_price)
+    // {
+    //   double amount=0;
+    //   for (var e in categorylist) {
+    //     if (e.id == id  && e.count>0) {
+    //       e.count--;
+    //       e.price = basic_price * e.count;
+    //       find_total(id);
+    //       notifyListeners();
+    //     }
+    //   }
+    //   notifyListeners();
+    // }
 
     //FIND GRAND TOTAL
   List<double> total_list = [];
@@ -961,95 +982,122 @@ double delivery_charge = 30.0;
   }
 
     List<WashlistModel>wash_list=[];
-  String order_id = '';
 
-  void Add_Order_Details (String from,String updt_id){
-    double total_price = 0.0;
-    DateTime id=DateTime.now();
-    String order_id=id.millisecondsSinceEpoch.toString();
+  void AddOrderDetails (String userId,String catname){
+
+    String order_id=DateTime.now().millisecondsSinceEpoch.toString();
     HashMap<String,dynamic>Main_map=HashMap();
-    HashMap<String,dynamic>Category_map=HashMap();
-    HashMap<String,dynamic>item_map=HashMap();
-    for(var e in wash_list){
+    HashMap<String,dynamic>categoryMap=HashMap();
+
+    for(var e in categorylist){
       HashMap<String,dynamic>count_map=HashMap();
-      count_map["COUNT"]=e.count;
-      count_map["PRICE"]=e.price;
-      total_price = total_price + e.price;
-      item_map[e.item]=count_map;
-    }
-    for(var e in TypeList){
-      Category_map[e.type]=item_map;
-    }
-    Main_map["ORDER_LIST"]=Category_map;
+      if(e.count>0){
+        count_map["COUNT"]=e.count;
+        count_map["PRICE"]=e.price;
+        count_map["CATEGORY_ID"]=e.id;
+        count_map["NAME"]=e.name;
+        categoryMap[e.id]=count_map;
 
-    if(from=='NEW'){
-      Main_map["ORDER_ID"]=order_id;
+      }
+    }
+    Main_map[catname]=categoryMap;
+
+    Main_map["Amount"]=getTotalAmount();
+    Main_map["Order_Time"]=DateTime.now();
+    Main_map["UserId"]=userId;
+    Main_map["OrderId"]=order_id;
+
       db.collection("Order_Details").doc(order_id).set(Main_map,SetOptions(merge: true));
-    }
-    else{
-      db.collection("Order_Details").doc(updt_id).update(Main_map);
-    }
-
+       GetOrderDetails();
+     notifyListeners();
 
   }
 
-  void Remove_washtype(String catname,BuildContext context){
-    int index;
-    print("Remove_washtype");
-    print("catname = $catname");
-    if(unselected_washtype.isNotEmpty)
-    {
-      unselected_washtype.removeWhere((element) => element.type == catname);
-      notifyListeners();
-    }
-    print(unselected_washtype);
-    AlertBox(context);
-    notifyListeners();
+  List<OrderModel>Orderlist=[];
+  void GetOrderDetails(){
+   db.collection("Order_Details").get().then((e){
+     if(e.docs.isNotEmpty){
+       Orderlist.clear();
+       for(var value in e.docs){
+         Orderlist.add(
+             OrderModel(
+                 value.id,
+                 value.get("NAME").toString(),
+                double.parse(value.get("PRICE").toString()) ,
+                 int.parse(value.get("COUNT").toString()),
+             ));
+         notifyListeners();
+
+       }
+     }
+     notifyListeners();
+
+   });
   }
 
-  void AlertBox(BuildContext context){
-    print("alert box");
-    // LaundryProvider provider=Provider.of(context,listen:false);
-    LoginProvider log_provider=Provider.of(context, listen: false);
-    showDialog(context: context,
-        builder: (context)=>AlertDialog(
-          content: Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: ListView.builder(
 
-                itemCount: unselected_washtype.length,
-                shrinkWrap: true,
-                itemBuilder: (context,index){
-                  return InkWell(
-                    onTap: (){
-                      var item= unselected_washtype[index].id.toString();
-                      getLaundryCategory(item);
-                      total_price1=0.0;
 
-                      Navigator.push(context, MaterialPageRoute(
-                          builder: (context)=>Washing(
-                            catid:unselected_washtype[index].id.toString(),catname:unselected_washtype[index].type.toString(),
-                            userid:log_provider.loginUserid,phone: log_provider.loginphno,name: log_provider.loginUsername,
-                          )));
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom:10),
-                      child: Container(
-                        height:50,
-                        width: 200,
-                        color: Color(0xff6F2DA8),
-                        child: Center(child: Text(unselected_washtype[index].type.toString(),style: TextStyle(fontSize: 19,color: Colors.white),)),
-                      ),
-                    ),
-                  );
 
-                }
 
-            ),
-          ),
-        )
-    );
-  }
+
+
+// void Remove_washtype(String catname,BuildContext context){
+  //   int index;
+  //   print("Remove_washtype");
+  //   print("catname = $catname");
+  //   if(unselected_washtype.isNotEmpty)
+  //   {
+  //     unselected_washtype.removeWhere((element) => element.type == catname);
+  //     notifyListeners();
+  //   }
+  //   print(unselected_washtype);
+  //   AlertBox(context);
+  //   notifyListeners();
+  // }
+  //
+  // void AlertBox(BuildContext context){
+  //   print("alert box");
+  //   // LaundryProvider provider=Provider.of(context,listen:false);
+  //   LoginProvider log_provider=Provider.of(context, listen: false);
+  //   showDialog(context: context,
+  //       builder: (context)=>AlertDialog(
+  //         content: Padding(
+  //           padding: const EdgeInsets.only(top: 10.0),
+  //           child: ListView.builder(
+  //
+  //               itemCount: unselected_washtype.length,
+  //               shrinkWrap: true,
+  //               itemBuilder: (context,index){
+  //                 return InkWell(
+  //                   onTap: (){
+  //                     var item= unselected_washtype[index].id.toString();
+  //                     getLaundryCategory(item);
+  //                     total_price1=0.0;
+  //
+  //                     Navigator.push(context, MaterialPageRoute(
+  //                         builder: (context)=>Washing(
+  //                           catid:unselected_washtype[index].id.toString(),catname:unselected_washtype[index].type.toString(),
+  //                           userid:log_provider.loginUserid,phone: log_provider.loginphno,name: log_provider.loginUsername,
+  //                         )));
+  //                   },
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.only(bottom:10),
+  //                     child: Container(
+  //                       height:50,
+  //                       width: 200,
+  //                       color: Color(0xff6F2DA8),
+  //                       child: Center(child: Text(unselected_washtype[index].type.toString(),style: TextStyle(fontSize: 19,color: Colors.white),)),
+  //                     ),
+  //                   ),
+  //                 );
+  //
+  //               }
+  //
+  //           ),
+  //         ),
+  //       )
+  //   );
+  // }
 
 
 

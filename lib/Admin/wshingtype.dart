@@ -270,7 +270,7 @@ class _AddWashtypeState extends State<AddWashtype> {
                   SizedBox(height:60,),
                   Consumer<LaundryProvider>(
                     builder: (context,value,child) {
-                      return InkWell(
+                      return GestureDetector(
 
                           onTap: (){
 

@@ -57,12 +57,13 @@ class _BookingdtlsState extends State<Bookingdtls> {
           children: [
           SizedBox(height: 30,),
         Center(
-        child: Container(
-        height: 380,width: 350,decoration:BoxDecoration(
-        color: Color(0xff6F2DA8),borderRadius: BorderRadius.circular(12)
+        child: SizedBox(
+          child: Container(
+          height: 380,width: 350,decoration:BoxDecoration(
+          color: Color(0xff6F2DA8),borderRadius: BorderRadius.circular(12)
     ),
-        child: Padding(
-        padding: const EdgeInsets.only(left: 27),
+          child: Padding(
+          padding:  EdgeInsets.only(left: 27),
     child: Column(mainAxisAlignment: MainAxisAlignment.center,
     children: [
     SizedBox(height: 10,),
@@ -107,7 +108,7 @@ class _BookingdtlsState extends State<Bookingdtls> {
     }).toList(),
     onChanged: (String? newValue) {
       setState(() {
-        dropdownValue = newValue!;
+          dropdownValue = newValue!;
       }
       );
     }
@@ -116,56 +117,85 @@ class _BookingdtlsState extends State<Bookingdtls> {
     ],
     ),
      SizedBox(height: 5,),
-     bulletslist("Shirt-3"),
-      bulletslist("T-shirt-2"),
-      bulletslist("Pant/Jeans-1"),
-      bulletslist("Jacket-1"),
+            Consumer<LaundryProvider>(
+              builder: (context,val,child) {
+                return Expanded(
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    physics: ScrollPhysics(),
+                    itemCount: val.Orderlist.length,
+                    itemBuilder: (context, index) {
+                     var item= val.Orderlist[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.white, // You can change bullet color here
+                          radius: 2,
+                        ),
+                        title: Text(item.name),
+                        trailing: Row(
+                          children: [
+                            Icon(Icons.horizontal_rule,color: Colors.white,),
+                            Text(item.count.toString()),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+
+            ),
+     // bulletslist("Shirt-3"),
+     //  bulletslist("T-shirt-2"),
+     //  bulletslist("Pant/Jeans-1"),
+     //  bulletslist("Jacket-1"),
       SizedBox(height: 10,),
       Row(
-        children: [
+          children: [
 
-          Text("Order Date:",style: TextStyle(fontWeight: FontWeight.w600,fontSize:20,color: Colors.white),),
-          SizedBox(width: 20,),
-          Text(widget.deliverydate,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 17,color: Colors.white),),
-        ],
+            Text("Order Date:",style: TextStyle(fontWeight: FontWeight.w600,fontSize:20,color: Colors.white),),
+            SizedBox(width: 20,),
+            Text(widget.deliverydate,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 17,color: Colors.white),),
+          ],
       ),
       SizedBox(height: 5,),
       Row(children: [
-        Text("Delivry Date:",style: TextStyle(fontSize: 21,fontWeight: FontWeight.w500,color: Colors.white),),
-        SizedBox(width: 10,),
-        Container(height:28,
-          decoration:BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [BoxShadow(color: Colors.grey.shade700,blurRadius: 2,spreadRadius: 2)],color: Colors.white,
-          ),
-          child: DropdownButton<String>(value:dropdownValue1,
-              items: <String>['Sept 17','Sept 18','Sept 19','Sept 20','Sept 21','Sept 22'].map<DropdownMenuItem<String>>
-                ((String value){
-                return DropdownMenuItem<String>(value: value,
-                  child: Center(
-                    child: Text(
-                      value,style: TextStyle(fontSize: 16,color: Colors.grey.shade900),
+          Text("Delivry Date:",style: TextStyle(fontSize: 21,fontWeight: FontWeight.w500,color: Colors.white),),
+          SizedBox(width: 10,),
+          Container(height:28,
+            decoration:BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [BoxShadow(color: Colors.grey.shade700,blurRadius: 2,spreadRadius: 2)],color: Colors.white,
+            ),
+            child: DropdownButton<String>(value:dropdownValue1,
+                items: <String>['Sept 17','Sept 18','Sept 19','Sept 20','Sept 21','Sept 22'].map<DropdownMenuItem<String>>
+                  ((String value){
+                  return DropdownMenuItem<String>(value: value,
+                    child: Center(
+                      child: Text(
+                        value,style: TextStyle(fontSize: 16,color: Colors.grey.shade900),
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  dropdownValue = newValue!;
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  }
+                  );
                 }
-                );
-              }
-          ),
-        )
+            ),
+          )
       ],),
       SizedBox(height: 5,),
       Row(
-        children: [
+          children: [
 
-          Text("Order Time:",style: TextStyle(fontWeight: FontWeight.w600,fontSize:20,color: Colors.white),),
-          SizedBox(width: 20,),
-          Text(widget.ordertime,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 17,color: Colors.white),),
-        ],
+            Text("Order Time:",style: TextStyle(fontWeight: FontWeight.w600,fontSize:20,color: Colors.white),),
+            SizedBox(width: 20,),
+            Text(widget.ordertime,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 17,color: Colors.white),),
+          ],
       ),
       // SizedBox(height: 10,),
       // Row(
@@ -180,44 +210,45 @@ class _BookingdtlsState extends State<Bookingdtls> {
       // ),
       SizedBox(height: 10,),
       Row(
-        children: [
-          Text("Payment Method:",style: TextStyle(fontWeight: FontWeight.w600,fontSize:20,color: Colors.white),),
-          SizedBox(width: 10,),
-          Container(height:30,
-            decoration:BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [BoxShadow(color: Colors.grey.shade700,blurRadius: 2,spreadRadius: 2)],color: Colors.white,
-            ),
-            child: DropdownButton<String>(value:dropdownValue2,
-                items: <String>['Credit Card','Google Pay ','Phone Pae','Cash On Delivery'].map<DropdownMenuItem<String>>
-                  ((String value){
-                  return DropdownMenuItem<String>(value: value,
-                    child: Center(
-                      child: Text(
-                        value,style: TextStyle(fontSize: 16,color: Colors.grey.shade900),
+          children: [
+            Text("Payment Method:",style: TextStyle(fontWeight: FontWeight.w600,fontSize:20,color: Colors.white),),
+            SizedBox(width: 10,),
+            Container(height:30,
+              decoration:BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [BoxShadow(color: Colors.grey.shade700,blurRadius: 2,spreadRadius: 2)],color: Colors.white,
+              ),
+              child: DropdownButton<String>(value:dropdownValue2,
+                  items: <String>['Credit Card','Google Pay ','Phone Pae','Cash On Delivery'].map<DropdownMenuItem<String>>
+                    ((String value){
+                    return DropdownMenuItem<String>(value: value,
+                      child: Center(
+                        child: Text(
+                          value,style: TextStyle(fontSize: 16,color: Colors.grey.shade900),
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
 
-                    dropdownValue = newValue!;
+                      dropdownValue = newValue!;
 
-                  }
+                    }
 
-                  );
-                },
+                    );
+                  },
 
-            ),
-          )
-        ],
+              ),
+            )
+          ],
       )
 
     ]
     )
     )
-    )
+    ),
+        )
     ),
             SizedBox(height: 50,),
 
