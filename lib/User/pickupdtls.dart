@@ -85,7 +85,8 @@ class _PickupState extends State<Pickup> {
                     //   children: [
                         Padding(
                           padding: const EdgeInsets.only(right: 180),
-                          child: Text("Pickup Date",style: TextStyle(fontWeight: FontWeight.w500,fontSize:21, ),),
+                          child: Text(
+                            "Pickup Date",style: TextStyle(fontWeight: FontWeight.w500,fontSize:21, ),),
                         ),
                         SizedBox(width:67,),
                     //     Container(height:30,
